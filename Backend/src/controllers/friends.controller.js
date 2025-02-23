@@ -27,34 +27,28 @@ const sendFriendRequest = async (req, res) => {
         { sentBy: sentToId, sentTo: sentById },
       ],
     });
+
     const areAlreadyFriends = sender.friends.includes(sentToId);
     const isBlocked = recipient.blocked.includes(sentById);
     const hasBeenBlocked = sender.blocked.includes(sentToId);
 
     if (existingRequest) {
-      return res
-        .status(409)
-        .json({
-          message: "Friend request already exists or has been handled.",
-        });
+      return res.status(409).json({
+        message: "Friend request already exists or has been handled.",
+      });
     }
 
     if (isBlocked) {
-      return res
-        .status(409)
-        .json({
-          message: "You have been blocked by this user.",
-        });
+      return res.status(409).json({
+        message: "You have been blocked by this user.",
+      });
     }
 
     if (hasBeenBlocked) {
-      return res
-        .status(409)
-        .json({
-          message: "Can't send, You blocked this user.",
-        });
+      return res.status(409).json({
+        message: "Can't send, You blocked this user.",
+      });
     }
-
 
     if (areAlreadyFriends) {
       return res.status(409).json({ message: "Users are already friends." });
@@ -90,7 +84,6 @@ const sendFriendRequest = async (req, res) => {
       .json({ message: "Internal server error while sending friend request." });
   }
 };
-
 
 // Approve a friend request
 const approveFriendRequest = async (req, res) => {
@@ -214,7 +207,6 @@ const getFriends = async (req, res) => {
   }
 };
 
-
 const getPotentialFriends = async (req, res) => {
   try {
     const currentUserId = req.userId;
@@ -307,14 +299,13 @@ const getUserWithFriendRequestStatus = async (req, res) => {
       ...user,
       friendRequestStatus: friendRequest ? friendRequest.status : null,
       requestId: friendRequest ? friendRequest._id : null,
-      isBlocked
+      isBlocked,
     });
   } catch (error) {
     console.error("Error fetching user details:", error);
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const checkFriendStatus = async (req, res) => {
   try {

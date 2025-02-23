@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { verifyToken } = require("../middlewares/verifyToken");
+const checkblacklist = require("../middlewares/checkblacklist");
+
 const {
   sendFriendRequest,
   approveFriendRequest,
@@ -29,7 +31,12 @@ router.get("/check/:id", verifyToken, checkFriendStatus);
 
 router.get("/potential", verifyToken, getPotentialFriends);
 
-router.get("/requests/pending", verifyToken, getPendingFriendRequests);
+router.get(
+  "/requests/pending",
+  checkblacklist,
+  verifyToken,
+  getPendingFriendRequests
+);
 
 router.get("/requests/sent", verifyToken, getSentFriendRequests);
 

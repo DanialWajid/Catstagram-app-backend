@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const { Comment } = require('../models/comments.model');
-const { Post } = require('../models/posts.model');
-const { FriendRequest } = require('../models/friendRequest.model');
-const { User } = require('../models/users.model');
+const { Comment } = require("../models/comments.model");
+const { Post } = require("../models/posts.model");
+const { FriendRequest } = require("../models/friendRequest.model");
+const { User } = require("../models/users.model");
 dotenv.config();
 const connectDB = async () => {
   try {

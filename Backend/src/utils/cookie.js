@@ -1,23 +1,20 @@
 const jwt = require("jsonwebtoken");
 
-const generateTokenSetCookie = (res, userId) => {
+const generateTokenSetHeader = (res, userId) => {
   if (!process.env.JWT_SECRET) {
     console.error("JWT_SECRET is not defined in the .env file");
     return;
   }
 
+  // Generate the JWT token
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: process.env.ACCESS_TOKEN_EXPIRY || "7d",
   });
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // Set maxAge
-  });
+  // Set the token in the Authorization header with the Bearer scheme
+  res.setHeader("Authorization", `Bearer ${token}`);
 
   return token;
 };
 
-module.exports = generateTokenSetCookie;
+module.exports = generateTokenSetHeader;

@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary").v2;
 const jwt = require("jsonwebtoken");
 const generateTokenSetCookie = require("../utils/cookie.js");
+const BlacklistedToken = require("../models/blacklistedtoken.js"); // Import the BlacklistedToken model
 const {
   sendVerificationEmail,
   sendWelcomeEmail,
@@ -99,10 +100,10 @@ const verifyEmail = async (req, res) => {
       name: pendingUser.name,
       isVerified: true,
     });
-    
+
     await user.save();
     await sendWelcomeEmail(user.email, user.name);
-    
+
     // Remove the pending user record
     await PendingUser.deleteOne({ email: pendingUser.email });
 
@@ -157,13 +158,26 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("token", {
-    httpOnly: true, // Match the httpOnly setting used during set-cookie
-    secure: true, // Match the secure setting
-    sameSite: "none", // Match the sameSite setting
-  });
-  res.status(200).json({ success: true, message: "Logged out successfully" });
-  
+  try {
+    // Get the token from the Authorization header
+    const token = req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+      return res.status(400).json({ message: "No token provided" });
+    }
+
+    // Add the token to the blacklist
+    await BlacklistedToken.create({ token });
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully, token blacklisted",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, message: "Logout failed", error: error.message });
+  }
 };
 
 const forgotPassword = async (req, res) => {

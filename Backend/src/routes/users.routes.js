@@ -2,6 +2,7 @@ const express = require("express");
 const upload = require("../middlewares/multer.middleware");
 const { User } = require("../models/users.model");
 const { verifyToken } = require("../middlewares/verifyToken.js");
+
 const {
   signup,
   verifyEmail,
